@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="fw-bold mb-1">
+      Transcript details
+    </h2>
+    <p class="text-muted mb-0">
+      {{ t.header }} · {{ t.cultivar }}
+    </p>
+  </div>
+  <a href="{{ url_for('download_fasta', tid=t.id) }}"
+     class="btn btn-success">
+    <i class="bi bi-download me-1"></i> Download FASTA
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card rounded-4 shadow-sm mb-3">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Summary</h5>
+        <dl class="row mb-0">
+          <dt class="col-5 text-muted">Header</dt>
+          <dd class="col-7">{{ t.header }}</dd>
+
+          <dt class="col-5 text-muted">Cultivar</dt>
+          <dd class="col-7">{{ t.cultivar }}</dd>
+
+          <dt class="col-5 text-muted">Length</dt>
+          <dd class="col-7">{{ t.length }} bp</dd>
+
+          <dt class="col-5 text-muted">GC content</dt>
+          <dd class="col-7">
+            {{ "%.2f" | format(t.gc_content or 0) }}%
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    {% if t.description %}
+      <div class="card rounded-4 shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Description</h6>
+          <p class="mb-0">{{ t.description }}</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card rounded-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Sequence</h5>
+        <pre class="sequence-block mb-0">{{ t.sequence }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

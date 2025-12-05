@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mb-4">
+  <h2 class="fw-bold mb-1">
+    <i class="bi bi-search me-2"></i> Search transcripts
+  </h2>
+  <p class="text-muted mb-0">
+    Filter by header/gene ID, cultivar, GC content, and sequence length.
+  </p>
+</div>
+
+<form method="post" class="card card-body mb-4 rounded-4 shadow-sm">
+  <div class="row g-3 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">
+        Header / Gene / ID
+      </label>
+      <input type="text" name="query" class="form-control"
+             placeholder="e.g., SoffiXsponR570.10Ag000100.1"
+             value="{{ query }}">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">
+        Cultivar / Species
+      </label>
+      <select class="form-select" name="cultivar">
+        <option value="">All cultivars</option>
+        {% for cv in cultivars %}
+          <option value="{{ cv }}" {% if cultivar == cv %}selected{% endif %}>
+            {{ cv }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Min GC (%)</label>
+      <input type="number" step="0.1" name="min_gc"
+             class="form-control" value="{{ min_gc }}">
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Max GC (%)</label>
+      <input type="number" step="0.1" name="max_gc"
+             class="form-control" value="{{ max_gc }}">
+    </div>
+  </div>
+
+  <div class="row g-3 align-items-end mt-1">
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Min length (bp)</label>
+      <input type="number" name="min_len" class="form-control" value="{{ min_len }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Max length (bp)</label>
+      <input type="number" name="max_len" class="form-control" value="{{ max_len }}">
+    </div>
+
+    <div class="col-md-4 mt-3 mt-md-0">
+      <button type="submit" class="btn btn-success btn-lg mt-1">
+        <i class="bi bi-funnel me-2"></i> Apply filters
+      </button>
+    </div>
+  </div>
+</form>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <p class="mb-0 text-muted">
+    {{ "{:,}".format(total_results) }} transcripts found.
+  </p>
+  {% if total_results %}
+    <p class="mb-0 text-muted small">
+      Page {{ page }} of {{ total_pages }}
+    </p>
+  {% endif %}
+</div>
+
+<div class="card rounded-4 shadow-sm">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Header</th>
+          <th>Cultivar</th>
+          <th class="text-end">Length (bp)</th>
+          <th class="text-end">GC (%)</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if results %}
+          {% for row in results %}
+            {% set rid, header, cv, length, gc = row %}
+            <tr>
+              <td class="text-wrap">
+                <a href="{{ url_for('transcript_view', tid=rid) }}"
+                   class="link-primary text-decoration-none">
+                  {{ header }}
+                </a>
+              </td>
+              <td>{{ cv }}</td>
+              <td class="text-end">{{ length }}</td>
+              <td class="text-end">
+                {{ "%.2f" | format(gc or 0) }}
+              </td>
+              <td class="text-center">
+                <a class="btn btn-sm btn-outline-success"
+                   href="{{ url_for('download_fasta', tid=rid) }}">
+                  <i class="bi bi-download me-1"></i> FASTA
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+              No transcripts match the current filters.
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if total_pages > 1 %}
+<nav class="mt-3">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+      <a class="page-link"
+         href="{{ url_for('search', query=query, cultivar=cultivar,
+                          min_gc=min_gc, max_gc=max_gc,
+                          min_len=min_len, max_len=max_len,
+                          page=page-1) }}">
+        Previous
+      </a>
+    </li>
+
+    {% for p in range(1, total_pages + 1) %}
+      <li class="page-item {% if p == page %}active{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('search', query=query, cultivar=cultivar,
+                            min_gc=min_gc, max_gc=max_gc,
+                            min_len=min_len, max_len=max_len,
+                            page=p) }}">
+          {{ p }}
+        </a>
+      </li>
+    {% endfor %}
+
+    <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+      <a class="page-link"
+         href="{{ url_for('search', query=query, cultivar=cultivar,
+                          min_gc=min_gc, max_gc=max_gc,
+                          min_len=min_len, max_len=max_len,
+                          page=page+1) }}">
+        Next
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

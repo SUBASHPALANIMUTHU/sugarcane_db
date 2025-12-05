@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h2 class="fw-bold mb-3">
+      About the Sugarcane Transcriptome Database
+    </h2>
+    <p>
+      This local web resource collects transcript sequences from multiple
+      <strong>Saccharum</strong> cultivars and related species
+      (e.g. BC, Co11015, R570, SP). It is designed for fast, interactive
+      exploration of large FASTA datasets directly from the browser.
+    </p>
+    <p>
+      The backend uses <strong>PostgreSQL</strong> to store headers and
+      sequences, together with automatically computed features such as
+      sequence length and GC content. The web interface is built with
+      <strong>Flask</strong> and <strong>Bootstrap 5</strong>, providing
+      a publication-ready layout similar to established plant
+      databases.
+    </p>
+    <p>
+      Typical use-cases include:
+    </p>
+    <ul>
+      <li>Quick lookup of specific transcript IDs or headers.</li>
+      <li>Filtering transcripts by cultivar/species.</li>
+      <li>Subsetting by GC content or sequence length for downstream analyses.</li>
+      <li>Downloading sequences in FASTA format for further alignment or
+          functional annotation.</li>
+    </ul>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card rounded-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">
+          Cultivars currently included
+        </h5>
+        <ul class="list-unstyled mb-0">
+          {% for cv in cultivars %}
+            <li class="mb-1">
+              <i class="bi bi-check2-circle text-success me-1"></i>
+              {{ cv }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
