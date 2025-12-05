@@ -26,7 +26,7 @@ app = Flask(__name__)
 app.secret_key = "change-this-secret-for-flash-messages"
 
 # IMPORTANT: %23 = '#' in URL encoding
-DB_URL = "postgresql://sugarcane_user:Subash480%23%23@localhost/sugarcane_db"
+DB_URL = os.getenv("DATABASE_URL")  # Render injects this automatically
 
 RESULTS_PER_PAGE = 20
 
